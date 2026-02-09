@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/frontend/style.css">
+</head>
+<body>
+
+<div class="box">
+    <h2>Student Login</h2>
+
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+</div>
+
+<script>
+function login() {
+    fetch("http://localhost:8085/api/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        localStorage.setItem("studentName", data.name);
+        window.location.href = "/frontend/dashboard.html";
+    })
+    .catch(() => alert("Invalid login"));
+}
+tch(() => alert("Invalid login"));
+
+</script>
+
+</body>
+</html>

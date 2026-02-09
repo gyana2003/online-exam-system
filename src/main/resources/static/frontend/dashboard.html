@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+
+    <!-- Connect CSS -->
+    <link rel="stylesheet" href="/frontend/style.css">
+</head>
+<body>
+
+<div class="box" style="width:500px;">
+    <h2 id="welcome"></h2>
+
+    <button onclick="loadStudents()">View Students</button>
+    <button onclick="startExam()">Start Exam</button>
+    <button onclick="logout()">Logout</button>
+
+    <ul id="list" style="text-align:left; margin-top:15px;"></ul>
+</div>
+
+<script>
+document.getElementById("welcome").innerText =
+    "Welcome " + localStorage.getItem("studentName");
+
+function loadStudents() {
+    fetch("http://localhost:8085/api/students")
+    .then(res => res.json())
+    .then(data => {
+        let list = document.getElementById("list");
+        list.innerHTML = "";
+
+        data.forEach(s => {
+            list.innerHTML += "<li>" + s.name + " - " + s.email + "</li>";
+        });
+    });
+}
+
+function startExam() {
+    window.location.href = "/frontend/exam.html";
+}
+
+function logout() {
+    localStorage.clear();
+    window.location.href = "/frontend/login.html";
+}
+</script>
+
+</body>
+</html>

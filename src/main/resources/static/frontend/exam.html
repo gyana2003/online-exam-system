@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Exam</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f6fa;
+            padding: 30px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #timer {
+            font-size: 22px;
+            font-weight: bold;
+            color: red;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 12px 25px;
+            background: green;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkgreen;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Online Exam</h2>
+
+<div id="timer">Time Left: 05:00</div>
+
+<div id="questions"></div>
+
+<center>
+    <button onclick="submitExam()">Submit Exam</button>
+</center>
+
+<h3 id="result"></h3>
+
+<script>
+let questionsData = [];
+let timeLeft = 300; // 5 minutes
+
+// TIMER
+setInterval(() => {
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+
+    document.getElementById("timer").innerText =
+        "Time Left: " +
+        String(minutes).padStart(2, '0') + ":" +
+        String(seconds).padStart(2, '0');
+
+    timeLeft--;
+
+    if (timeLeft < 0) {
+        alert("Time is up! Exam auto submitted.");
+        submitExam();
+    }
+}, 1000);
+
+
+// LOAD QUESTIONS
+function loadQuestions() {
+    fetch("http://localhost:8085/api/questions")
+    .then(res => res.json())
+    .then(data => {
+        questionsData = data;
+        let div = document.getElementById("questions");
+        div.innerHTML = "";
+
+        data.forEach((q, index) => {
+            div.innerHTML += `
+                <div class="card">
+                    <p><b>Q${index+1}: ${q.question}</b></p>
+
+                    <input type="radio" name="q${index}" value="${q.optionA}"> ${q.optionA}<br>
+                    <input type="radio" name="q${index}" value="${q.optionB}"> ${q.optionB}<br>
+                    <input type="radio" name="q${index}" value="${q.optionC}"> ${q.optionC}<br>
+                    <input type="radio" name="q${index}" value="${q.optionD}"> ${q.optionD}<br>
+                </div>
+            `;
+        });
+    });
+}
+
+
+// SUBMIT EXAM
+function submitExam() {
+
+    let score = 0;
+
+    questionsData.forEach((q, index) => {
+        let selected = document.querySelector(`input[name="q${index}"]:checked`);
+        if (selected && selected.value === q.answer) {
+            score++;
+        }
+    });
+
+    document.getElementById("result").innerText =
+        "Your Score: " + score + " / " + questionsData.length;
+
+    fetch("http://localhost:8085/api/saveResult", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            studentName: localStorage.getItem("studentName"),
+            studentEmail: "student@gmail.com",
+            score: score,
+            total: questionsData.length
+        })
+    });
+}
+
+loadQuestions();
+</script>
+
+</body>
+</html>

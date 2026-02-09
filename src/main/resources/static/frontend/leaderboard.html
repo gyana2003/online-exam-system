@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaderboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #4facfe;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f2f2f2;
+        }
+
+        .empty {
+            margin-top: 15px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Top Scorers Leaderboard</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Score</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboardData"></tbody>
+    </table>
+
+    <p class="empty" id="emptyMsg"></p>
+</div>
+
+<script>
+fetch("http://localhost:8085/api/leaderboard")
+.then(res => res.json())
+.then(data => {
+
+    let rows = "";
+
+    if (data.length === 0) {
+        document.getElementById("emptyMsg").innerText =
+            "No results yet. Complete an exam first.";
+        return;
+    }
+
+    data.forEach((r, index) => {
+        rows += `
+            <tr>
+                <td>${index+1}</td>
+                <td>${r.studentName}</td>
+                <td>${r.score} / ${r.total}</td>
+                <td>${r.percentage.toFixed(1)}%</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("leaderboardData").innerHTML = rows;
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Question</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f2f2f2;
+            padding: 40px;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            width: 400px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px gray;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: green;
+            color: white;
+            border: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Add Question</h2>
+
+    <input id="q" placeholder="Question">
+
+    <input id="a" placeholder="Option A">
+    <input id="b" placeholder="Option B">
+    <input id="c" placeholder="Option C">
+    <input id="d" placeholder="Option D">
+
+    <input id="ans" placeholder="Correct Answer">
+
+    <select id="level">
+        <option>EASY</option>
+        <option>MEDIUM</option>
+        <option>HARD</option>
+    </select>
+
+    <button onclick="add()">Add Question</button>
+</div>
+
+<script>
+function add() {
+    fetch("http://localhost:8085/api/addQuestion", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            question: document.getElementById("q").value,
+            optionA: document.getElementById("a").value,
+            optionB: document.getElementById("b").value,
+            optionC: document.getElementById("c").value,
+            optionD: document.getElementById("d").value,
+            answer: document.getElementById("ans").value,
+            difficulty: document.getElementById("level").value
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        alert("Question Added!");
+        location.reload();
+    });
+}
+</script>
+
+</body>
+</html>
